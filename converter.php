@@ -91,7 +91,7 @@ function loadXlsxData($file, $config, $productType, $brand)
     
     //save CSV
     $fileName = 'out/'.$productType.'_'.$brand.'_'.date('Y-m-d H-i').'.csv';
-    $file = fopen($fileName,"w");
+    $file = fopen($fileName,"w+");
     fwrite($file, $result);
     fclose($file);
     
@@ -138,7 +138,13 @@ function createSimple($data, $config)
             {
                 $val = $val*$priceMultiplier;
             }
+			elseif($key == 'sku')
+			{
+				$val = str_replace(' ', '', str_replace(' X ', 'x', $val));
+			}
         }
+		
+		
         $result .= '"'.$val.'",';
     }
     $result = substr($result, 0, strlen($result)-1)."\n";
@@ -259,6 +265,7 @@ function createConfigurable($groupingBy, $config, $simplesArray)
                 );
                     
                 $val = str_replace('""', '"', $val);
+                $val = str_replace('X', 'x', $val);
                 $val = $oneRow[$val];
                 $val = str_replace('"', '""', $val);
             }
@@ -275,6 +282,11 @@ function createConfigurable($groupingBy, $config, $simplesArray)
                 );
             }
         }
+			
+		if($key == 'sku' || $key == 'associated')
+		{
+			$val = str_replace(' ', '', str_replace(' X ', 'x', $val));
+		}
         $result .= '"'.$val.'",';
     }
     $result = substr($result, 0, strlen($result)-1)."\n";
